@@ -1,4 +1,4 @@
-import cStringIO
+from io import BytesIO
 import collections
 import itertools
 import json
@@ -48,10 +48,10 @@ def _write_csv(f, table_):
 
     Writes UTF8-encoded, CSV-formatted text.
 
-    ``f`` could be an opened file, sys.stdout, or a StringIO.
+    ``f`` could be an opened file, sys.stdout, or a BytesIo.
 
     """
-    fieldnames = table_[0].keys()
+    fieldnames = list(table_[0].keys())
     set_fieldname = set(table_[0].keys())
     # go through all the fields and find all the field names
     for row in table_:
@@ -66,9 +66,9 @@ def _write_csv(f, table_):
 
     # Change lists into comma-separated strings.
     for dict_ in table_:
-        for key, value in dict_.items():
+        for key, value in list(dict_.items()):
             if type(value) in (list, tuple):
-                dict_[key] = ', '.join([unicode(v) for v in value])
+                dict_[key] = ', '.join([v for v in value])
 
     writer.writerows(table_)
 
@@ -80,13 +80,13 @@ def _table_to_csv(table_):
     :type table: list of OrderedDicts each with the same keys in the same
         order
 
-    :rtype: UTF8-encoded, CSV-formatted string
+    :rtype: string, CSV-formatted string
 
     """
-    f = cStringIO.StringIO()
+    f = BytesIO()
     try:
         _write_csv(f, table_)
-        return f.getvalue()
+        return f.getvalue().decode('utf-8')
     finally:
         f.close()
 
@@ -112,12 +112,12 @@ def table(dicts, columns, csv=False, pretty=False):
 
     """
     # Optionally read columns from file.
-    if isinstance(columns, basestring):
+    if isinstance(columns, str):
         columns = _read_columns_file(columns)
 
     # Either "pattern" or "pattern_path" (but not both) is allowed in the
     # columns.json file, but "pattern" gets normalised to "pattern_path" here.
-    for column in columns.values():
+    for column in list(columns.values()):
         if "pattern" in column:
             assert "pattern_path" not in column, (
                 'A column must have either a "pattern" or a "pattern_path"'
@@ -129,12 +129,12 @@ def table(dicts, columns, csv=False, pretty=False):
     table_ = []
     for d in dicts:
         row = collections.OrderedDict()  # The row we'll return in the table.
-        for column_title, column_spec in columns.items():
+        for column_title, column_spec in list(columns.items()):
             if not column_spec.get('return_multiple_columns', False):
                 row[column_title] = query(dict_=d, **column_spec)
             else:
                 multiple_columns = query(dict_=d, **column_spec)
-                for k, v in multiple_columns.items():
+                for k, v in list(multiple_columns.items()):
                     row[k] = v
 
         table_.append(row)
@@ -179,7 +179,7 @@ def query(pattern_path, dict_, max_length=None, strip=False,
         string_transformations.append(
             lambda x: '=HYPERLINK("{0}")'.format(x))
 
-    if isinstance(pattern_path, basestring):
+    if isinstance(pattern_path, str):
         pattern_path = [pattern_path]
 
     # Copy the pattern_path because we're going to modify it which can be
@@ -218,13 +218,12 @@ def query(pattern_path, dict_, max_length=None, strip=False,
         return result
 
 
-
 def _flatten(d, parent_key='', sep='_'):
     items = []
-    for k, v in d.items():
+    for k, v in list(d.items()):
         new_key = parent_key + sep + k if parent_key else k
         if isinstance(v, collections.MutableMapping):
-            items.extend(_flatten(v, new_key, sep=sep).items())
+            items.extend(list(_flatten(v, new_key, sep=sep).items()))
         else:
             items.append((new_key, v))
     return collections.OrderedDict(items)
@@ -235,7 +234,7 @@ def _process_object(pattern_path, object_, **kwargs):
         return _process_list(pattern_path, object_, **kwargs)
     elif isinstance(object_, dict):
         return _process_dict(pattern_path, object_, **kwargs)
-    elif isinstance(object_, basestring):
+    elif isinstance(object_, str):
         return _process_string(object_, **kwargs)
     else:
         return [object_]
@@ -280,6 +279,6 @@ def _process_dict(pattern_path, dict_, case_sensitive=False,
                 **kwargs
             )
     if not return_multiple_columns:
-        return list(itertools.chain(*result_dict.values()))
+        return list(itertools.chain(*list(result_dict.values())))
     else:
         return result_dict

@@ -5,7 +5,7 @@ import inspect
 
 import nose.tools
 
-import losser
+from . import losser
 
 
 def test_number():
@@ -39,9 +39,9 @@ def test_string_with_strip_and_transform():
 
 def test_unicode_string():
     string_transformations = [lambda x: x[:3]]
-    result = losser.query([], u" fübar  ", strip=True,
+    result = losser.query([], " fübar  ", strip=True,
                             string_transformations=string_transformations)
-    assert result == u"füb"
+    assert result == "füb"
 
 
 def test_boolean():
@@ -468,7 +468,6 @@ def test_returning_csv():
     columns["Formats"] = dict(pattern_path=["^resources$", "^format$"])
 
     csv_string = losser.table(rows, columns, csv=True)
-
     assert csv_string == (
         "Author,Formats\r\n"
         'Guybrush Threepwood,"CSV, JSON"\r\n'
@@ -511,12 +510,11 @@ def test_returning_multiple_matches_as_extra_columns():
                              return_multiple_columns=True)
 
     csv_string = losser.table(rows, columns, csv=True)
-
     nose.tools.assert_equals(csv_string,
-        'Author,extras_second,extras_first\r\n'
-        'Guybrush Threepwood,second extra,first extra\r\n'
-        'LeChuck,second extra,first extra\r\n'
-        'Herman Toothrot,second extra,first extra\r\n'
+        'Author,extras_first,extras_second\r\n'
+        'Guybrush Threepwood,first extra,second extra\r\n'
+        'LeChuck,first extra,second extra\r\n'
+        'Herman Toothrot,first extra,second extra\r\n'
     )
 
 
@@ -581,8 +579,8 @@ def test_returning_multiple_matches_matching_multiple_dicts():
     csv_string = losser.table(rows, columns, csv=True)
 
     nose.tools.assert_equals(csv_string,
-        'Author,extra_second,extra_first,extras_fourth,extras_third\r\n'
-        'Guybrush,second extra,first extra,second extra,first extra\r\n'
+        'Author,extra_first,extra_second,extras_third,extras_fourth\r\n'
+        'Guybrush,first extra,second extra,first extra,second extra\r\n'
     )
 
 

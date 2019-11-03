@@ -1,11 +1,10 @@
 """The command-line interface for losser."""
-from __future__ import absolute_import
+
 
 import argparse
 import collections
 import json
 import sys
-import StringIO
 
 import losser.losser as losser
 
@@ -255,7 +254,7 @@ def parse(parser=None, args=None):
         columns = collections.OrderedDict()
         parsed_args.columns = columns
 
-    for title, spec in columns.items():
+    for title, spec in list(columns.items()):
         if "pattern" not in spec:
             raise ColumnWithoutPatternError(
                 'Column "{0}" needs a pattern'.format(title))

@@ -1,5 +1,5 @@
 """Tests for the command-line argument parsing."""
-from __future__ import absolute_import
+
 
 import collections
 import inspect
@@ -151,7 +151,7 @@ def test_with_one_column_argument():
         in_=mock_stdin)
 
     table_function.assert_called_once_with(
-        u"foobar",
+        "foobar",
         collections.OrderedDict(Title={"pattern": "^title$"}),
         csv=True, pretty=False)
 
@@ -336,7 +336,7 @@ def test_max_length():
         in_=mock_stdin)
 
     table_function.assert_called_once_with(
-        u"foobar",
+        "foobar",
         collections.OrderedDict(
             Title={"pattern": "^title$", "max_length": 255}),
         csv=True, pretty=False)
@@ -389,7 +389,7 @@ def test_pattern_with_multiple_arguments():
         in_=mock_stdin)
 
     table_function.assert_called_once_with(
-        u"foobar",
+        "foobar",
         collections.OrderedDict(
             Formats={"pattern": ["^resources$", "^format$"]}),
         csv=True, pretty=False)
