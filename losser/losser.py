@@ -68,7 +68,7 @@ def _write_csv(f, table_):
     for dict_ in table_:
         for key, value in list(dict_.items()):
             if type(value) in (list, tuple):
-                dict_[key] = ', '.join([v for v in value])
+                dict_[key] = ', '.join([str(v) for v in value])
 
     writer.writerows(table_)
 
