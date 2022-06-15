@@ -10,6 +10,10 @@
 Losser
 ======
 
+Python 3 compatibility
+--
+This forked repo contains a py3 compatible version of losser in order to use the ckanapi-exporter with CKAN 2.9
+
 Losser is a little JSON to CSV converter:
 
 * It takes a list of JSON objects as input and produces a CSV file as output
